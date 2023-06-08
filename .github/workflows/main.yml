@@ -24,6 +24,7 @@ jobs:
 
       - name: Build and tag Docker image
         env:
+          IMAGE_TAG: ${{ github.sha }}
           ECR_REGISTRY: public.ecr.aws/l6m8v2w7/nodejsapp
         run: |
           docker build -t $ECR_REGISTRY:$IMAGE_TAG .
