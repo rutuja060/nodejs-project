@@ -28,4 +28,4 @@ jobs:
 
       - name: Update ECS service
         run: |
-          aws ecs update-service --cluster nodejsapp --service nodeapp-service --force-new-deployment
+          aws ecs update-service --cluster nodejsapp --service nodejsapp-service --force-new-deployment
