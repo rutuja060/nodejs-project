@@ -1,5 +1,4 @@
----
-name: Deploy to ECS
+name: ECS Deploy
 
 on:
   push:
@@ -14,31 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build and tag Docker image
-        env:
-          IMAGE_TAG: ${{ github.sha }}
-          ECR_REGISTRY: public.ecr.aws/l6m8v2w7/nodejsapp
-        run: |
-          docker build -t $ECR_REGISTRY:$IMAGE_TAG .
-          docker tag $ECR_REGISTRY:$IMAGE_TAG $ECR_REGISTRY:latest
-
-      - name: Log in to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          registry: public.ecr.aws/l6m8v2w7/nodejsapp
-
-      - name: Push Docker image to Amazon ECR
-        run: |
-          docker push public.ecr.aws/l6m8v2w7/nodejsapp:latest
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -46,6 +20,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      - name: Deploy to ECS
+      - name: Build and push Docker image
         run: |
-          aws ecs update-service --cluster nodejsapp --service node-service --force-new-deployment
+          docker build -t nodejs-image .
+          docker tag nodejs-image:latest public.ecr.aws/l6m8v2w7/nodejsapp/nodejs-image:latest
+          docker push public.ecr.aws/l6m8v2w7/nodejsapp/nodejs-image:latest
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service --cluster nodejsapp --service nodeapp-service --force-new-deployment
