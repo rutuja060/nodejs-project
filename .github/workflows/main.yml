@@ -36,3 +36,19 @@ jobs:
         context: .
         push: true
         tags: 700740239256.dkr.ecr.ap-south-1.amazonaws.com/nodejsapp:latest
+    
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: .github/workflows/task-definition.json
+        container-name: nodejsapp-container
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: nodejsapp-service
+        cluster: nodejsapp
+        wait-for-service-stability: true
