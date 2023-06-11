@@ -37,17 +37,7 @@ jobs:
         push: true
         tags: 700740239256.dkr.ecr.ap-south-1.amazonaws.com/nodejsapp:latest
      
-    
-    - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def
-      uses: aws-actions/amazon-ecs-render-task-definition@v1
-      with:
-        task-definition: .github/workflows/task-definition.json
-        container-name: nodejsapp-container
-        image: ${{ steps.build-image.outputs.image }}
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1
+   
         
     - name: Update ECS task definition
       uses: aws-actions/amazon-ecs-update-task-definition@v1
