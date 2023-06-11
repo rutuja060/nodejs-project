@@ -44,12 +44,12 @@ jobs:
       with:
           task-definition: .github/workflows/task-definition.json
           container-name: nodejsapp-container
-          image: ${{ steps.build-image.outputs.image }}
+          image: 700740239256.dkr.ecr.ap-south-1.amazonaws.com/nodejsapp:latest
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@de0132cf8cdedb79975c6d42b77eb7ea193cf28e
       with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: nodejsapp-container
+          service: nodejsapp-service
           cluster: nodejsapp
           wait-for-service-stability: true
