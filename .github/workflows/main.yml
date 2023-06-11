@@ -43,13 +43,16 @@ jobs:
        aws ecs describe-task-definition --task-definition service \
        --query taskDefinition > task-definition.json
 
-    - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def
-      uses: aws-actions/amazon-ecs-render-task-definition@v1
-      with:
-         task-definition: task-definition.json
-         container-name: nodejsapp-container
-         image: ${{ steps.build-image.outputs.image }}
+    - name: Update ECS task definition
+      id: update-task-def
+      run: |
+          # Run commands to update the task definition
+          # For example, using AWS CLI:
+          aws ecs register-task-definition \
+            --family nodejsapp-td \
+            --task-role-arn arn:aws:iam::700740239256:role/ecsTaskExecutionRole \
+            --execution-role-arn arn:aws:iam::700740239256:role/ecsTaskExecutionRole \
+            --container-definitions file://.github/workflows/task-definition.json
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
