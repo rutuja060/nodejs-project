@@ -37,11 +37,6 @@ jobs:
         push: true
         tags: 700740239256.dkr.ecr.ap-south-1.amazonaws.com/nodejsapp:latest
      
-   
-    - name: Download task definition
-      run: |
-       aws ecs describe-task-definition --task-definition service \
-       --query taskDefinition > task-definition.json
 
     - name: Update ECS task definition
       id: update-task-def
