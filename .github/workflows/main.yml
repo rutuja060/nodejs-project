@@ -1,4 +1,4 @@
-name: Deploy to ECS
+name: ECS Deployment
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v2
 
       - name: Configure AWS credentials
@@ -21,24 +21,15 @@ jobs:
           aws-region: ap-south-1
 
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build and push Docker image
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: nodejsapp
-          IMAGE_TAG: ${{ secrets.IMAGE_TAG }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t 700740239256.dkr.ecr.ap-south-1.amazonaws.com/nodejsapp:latest .
+          docker push 700740239256.dkr.ecr.ap-south-1.amazonaws.com/nodejsapp:latest
           
-      - name: Deploy to Amazon ECS
-        id: deploy-ecs
-        env:
-          ECS_CLUSTER_NAME: nodejsapp
-          ECS_SERVICE_NAME: nodejsapp-service-v1
-          TASK_DEFINITION_NAME: nodejsapp-td
+
+      - name: Deploy to ECS
         run: |
-          aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --force-new-deployment
+          aws ecs update-service --cluster nodejsapp --service nodejsapp --force-new-deployment
+
